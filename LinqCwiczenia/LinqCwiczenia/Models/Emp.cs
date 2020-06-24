@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
-namespace LinqConsoleApp
+namespace LinqCwiczenia.Models
 {
     public class Emp
     {
@@ -14,7 +16,12 @@ namespace LinqConsoleApp
         public int? Deptno { get; set; }
         public Emp Mgr { get; set; }
 
-        public Emp( int nr, string name, string job, int salary, DateTime? hireDate, int? deptno, Emp mgr)
+        public override string ToString()
+        {
+            return Ename +" ("+Empno+")";
+        }
+
+        public Emp(int nr, string name, string job, int salary, DateTime? hireDate, int? deptno, Emp mgr)
         {
             Empno = nr;
             Ename = name;
@@ -22,12 +29,7 @@ namespace LinqConsoleApp
             Salary = salary;
             HireDate = hireDate;
             Deptno = deptno;
-            Mgr = mgr; 
-        }
-
-        public override string ToString()
-        {
-            return Ename + " (" + Empno + ")";
+            Mgr = mgr;
         }
 
         public static List<Emp> CreateExampleData()
@@ -40,7 +42,7 @@ namespace LinqConsoleApp
             list.Add(new Emp(2, "Miłosz", "Mechanik", 1400, new DateTime(2003, 10, 12), 2, list[3]));
             list.Add(new Emp(2, "Janusz", "Mechanik", 3400, new DateTime(2003, 10, 12), 3, list[0]));
 
-            return list; 
+            return list;
         }
     }
 }
