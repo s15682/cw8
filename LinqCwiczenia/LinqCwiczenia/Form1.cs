@@ -37,8 +37,8 @@ namespace LinqCwiczenia
             //2. Anonymous types
             var anon = new
             {
-                FirstName="Jan",
-                LastName="Kowalski"
+                FirstName = "Jan",
+                LastName = "Kowalski"
             };
 
             //System.Dynamic
@@ -245,25 +245,13 @@ namespace LinqCwiczenia
         /// </summary>
         private void Przyklad1Button_Click(object sender, EventArgs e)
         {
-            //var res = new List<Emp>();
-            //foreach(var emp in Emps)
-            //{
-            //    if (emp.Job == "Backend programmer") res.Add(emp);
-            //}
-
-            //1. Query syntax (SQL)
             var res = from emp in Emps
                       where emp.Job == "Backend programmer"
                       select new
                       {
-                          Nazwisko=emp.Ename,
-                          Zawod=emp.Job
+                          Nazwisko = emp.Ename,
+                          Zawod = emp.Job
                       };
-
-
-            //2. Lambda and Extension methods
-
-
             ResultsDataGridView.DataSource = res.ToList();
         }
 
@@ -272,12 +260,11 @@ namespace LinqCwiczenia
         /// </summary>
         private void Przyklad2Button_Click(object sender, EventArgs e)
         {
-            var res = (from emp in Emps
+            /* var res = (from emp in Emps
                        join dept in Depts on emp.Deptno equals dept.Deptno
                        where emp.Job == "Frontend programmer" && emp.Salary > 1000
                        orderby emp.Ename descending
-                       select emp).ToList();
-
+                       select emp).ToList(); */
             var res2 = Emps
                         .Where((emp, indx) => emp.Job == "Frontend programmer" && emp.Salary > 1000)
                         .OrderByDescending(emp => emp.Ename)
@@ -286,10 +273,8 @@ namespace LinqCwiczenia
                         {
                             emp.Ename,
                             emp.Salary,
-                            LiczbaDept=Depts.Count()
+                            LiczbaDept = Depts.Count()
                         });
-
-
             ResultsDataGridView.DataSource = res2.ToList();
         }
 
@@ -298,50 +283,9 @@ namespace LinqCwiczenia
         /// </summary>
         private void Przyklad3Button_Click(object sender, EventArgs e)
         {
-            var min = Emps.Min(emp => emp.Salary);
             var max = Emps.Max(emp => emp.Salary);
-            var avg = Emps.Average(emp => emp.Salary);
 
-            var groupBy = Emps.GroupBy(emp => emp.Deptno);
-
-            var joinResult = Emps
-                    .Join(Depts, emp => emp.Deptno, dept => dept.Deptno, (emp, dept) => new
-                    {
-                        emp,
-                        dept
-                    });
-
-            //map, reduce, filter
-            //select, aggregate, where
-
-            var p1 = Emps.All(emp => emp.Salary > 2000);
-            var p2 = Emps.Any(emp => emp.Salary > 2000);
-
-            var p3 = Emps.Count(emp => emp.Salary > 2000);
-
-            //var p4 = Emps.Skip(10).Take(10);
-
-            var p5 = Emps.Distinct();
-
-            var p6 = Emps.Sum(emp => emp.Salary);
-
-            var p7 = Emps.First(); //EX
-            var p7_2 = Emps.FirstOrDefault(); //null
-
-            var p8 = Emps.Single();
-            var p8_2 = Emps.SingleOrDefault();
-
-            var p9 = Emps
-                        .Select(emp => emp.Salary)
-                        .Aggregate((res, next) => res+next);
-
-            //Dynamic LINQ - Emps.OrderBy(zmienna)
-            //PLINQ - Parallel LINQ
-            //Emps.AsParallel() // ThreadPool
-
-
-            int g = 0;
-            //WynikTextBox.Text = result + "";
+            WynikTextBox.Text = max + "";
         }
 
         /// <summary>
@@ -349,8 +293,11 @@ namespace LinqCwiczenia
         /// </summary>
         private void Przyklad4Button_Click(object sender, EventArgs e)
         {
-
-            //ResultsDataGridView.DataSource = result;
+            var res = (from emp in Emps
+                       where emp.Salary == Emps.Max(emp_base => emp_base.Salary)
+                       orderby emp.Ename descending
+                       select emp).ToList();
+            ResultsDataGridView.DataSource = res;
         }
 
         /// <summary>
@@ -358,8 +305,13 @@ namespace LinqCwiczenia
         /// </summary>
         private void Przyklad5Button_Click(object sender, EventArgs e)
         {
-
-            //ResultsDataGridView.DataSource = result;
+            var res = from emp in Emps
+                      select new
+                      {
+                          Nazwisko = emp.Ename,
+                          Praca = emp.Job
+                      };
+            ResultsDataGridView.DataSource = res.ToList();
         }
 
         /// <summary>
@@ -369,8 +321,15 @@ namespace LinqCwiczenia
         /// </summary>
         private void Przyklad6Button_Click(object sender, EventArgs e)
         {
-
-            //ResultsDataGridView.DataSource = result;
+            var res = (from emp in Emps
+                       join dept in Depts on emp.Deptno equals dept.Deptno
+                       select new
+                       {
+                           emp.Ename,
+                           emp.Job, 
+                           dept.Dname
+                       }).ToList();
+            ResultsDataGridView.DataSource = res;
         }
 
         /// <summary>
@@ -378,8 +337,14 @@ namespace LinqCwiczenia
         /// </summary>
         private void Przyklad7Button_Click(object sender, EventArgs e)
         {
-
-            //ResultsDataGridView.DataSource = result;
+            var result = Emps
+                        .GroupBy(emp => emp.Job)
+                        .Select(group => new
+                        {
+                            Praca = group.Key,
+                            LiczbaPracownikow = group.Count()
+                        }).ToList();
+            ResultsDataGridView.DataSource = result;
         }
 
         /// <summary>
@@ -388,12 +353,10 @@ namespace LinqCwiczenia
         /// </summary>
         private void Przyklad8Button_Click(object sender, EventArgs e)
         {
-            /*
-            if (LINQ)
+            if (Emps.Where(emp=>emp.Job == "Backend programmer").Any())
             {
                 WynikTextBox.Text = "Backend programmer istnieje w kolekcji";
-            }
-             */
+            }    
         }
 
         /// <summary>
@@ -403,7 +366,11 @@ namespace LinqCwiczenia
         private void Przyklad9Button_Click(object sender, EventArgs e)
         {
 
-            //ResultsDataGridView.DataSource = result;
+            var result = Emps
+                       .Where(emp => emp.Job == "Frontend programmer")
+                       .First(); 
+            
+            ResultsDataGridView.DataSource = new List<Emp> { result };
         }
 
         /// <summary>
@@ -413,12 +380,60 @@ namespace LinqCwiczenia
         /// </summary>
         private void Przyklad10Button_Click(object sender, EventArgs e)
         {
+            var newEmp = new Emp();
+            newEmp.Ename = "Brak wartości"; 
+            var newEmpCollection = new List<Emp>();
+            newEmpCollection.Add(newEmp);
 
-            //ResultsDataGridView.DataSource = result;
+            var res = Emps
+                .Select(emp => new
+                {
+                    emp.Ename,
+                    emp.Job,
+                    emp.HireDate
+                }).Union(newEmpCollection.Select(emp => new
+                {
+                    emp.Ename,
+                    emp.Job,
+                    emp.HireDate
+                })).ToList(); 
+            ResultsDataGridView.DataSource = res;
         }
 
+        private void panel1_Paint(object sender, PaintEventArgs e)
+        {
 
+        }
 
+        //Znajdź pracownika z najwyższą pensją wykorzystując metodę Aggregate()
+        private void Przyklad11Button_Click(object sender, EventArgs e)
+        {
+            var result = Emps
+                    .Select(emp => new
+                    {
+                        Pracownik = emp.Ename,
+                        Pensja = emp.Salary
+                    })
+                    .Aggregate((higherPaid, next) => next.Pensja > higherPaid.Pensja ? next : higherPaid);
 
+            var res = new List<object>();
+            res.Add(result); 
+
+            ResultsDataGridView.DataSource = res;
+        }
+
+        //Z pomocą języka LINQ i metody SelectMany wykonaj złączenie
+        //typu CROSS JOIN
+        private void Przyklad12Button_Click(object sender, EventArgs e)
+        {
+            var result = Depts.SelectMany(emp => Emps, (x, y) => new
+            {
+                Departament = x.Dname,
+                Pracownik = y.Ename
+            }).ToList(); 
+                            
+            ResultsDataGridView.DataSource = result;
+        }
     }
 }
+ 
